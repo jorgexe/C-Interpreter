@@ -1,0 +1,8 @@
+int x = 10;
+float y = x + 2.5;
+if (x > 5) {
+    while (x > 1) {
+        print("Hello, World!");
+    }
+    
+}

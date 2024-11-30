@@ -11,7 +11,6 @@ public abstract class ASTNode {
         return lineNumber;
     }
 
-    // Getter and setter for the 'type' field
     public String getType() {
         return type;
     }

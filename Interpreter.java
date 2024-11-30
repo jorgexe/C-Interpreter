@@ -109,8 +109,6 @@ public class Interpreter implements ASTVisitor<Object> {
 
     @Override
     public Object visit(InputNode node) {
-        // For simplicity, we'll just return a placeholder string
-        // Implement actual input logic if needed
         return "user_input";
     }
 
@@ -186,14 +184,11 @@ public class Interpreter implements ASTVisitor<Object> {
 
     @Override
     public Object visit(FunctionNode node) {
-        // Function declarations can be stored in the environment
-        // Implement function handling if needed
         return null;
     }
 
     @Override
     public Object visit(FunctionCallNode node) {
-        // Function call handling can be implemented if needed
         return null;
     }
 
@@ -205,8 +200,6 @@ public class Interpreter implements ASTVisitor<Object> {
         }
         throw new ReturnException(value);
     }
-
-    // Helper methods
 
     private boolean isTruthy(Object value) {
         if (value == null) return false;

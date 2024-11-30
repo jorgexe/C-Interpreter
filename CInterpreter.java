@@ -36,7 +36,6 @@ public class CInterpreter {
             System.err.println("Syntax Error: Line " + e.getLineNumber() + ": " + e.getMessage());
             // Print the problematic line for context
             String[] lines = source.split("\n");
-            // e.getLineNumber() is not available.
         }
 
         // Semantic Analysis
@@ -48,7 +47,7 @@ public class CInterpreter {
             System.out.println("Semantic analysis completed successfully.");
         } catch (SemanticException e) {
             System.err.println("Semantic Error: Line " + e.getLineNumber() + ": " + e.getMessage());
-            // Optionally, print the problematic line for context
+            // print the problematic line for context
             String[] lines = source.split("\n");
             if (e.getLineNumber() <= lines.length) {
                 System.err.println("Near: " + lines[e.getLineNumber() - 1]);
@@ -65,7 +64,7 @@ public class CInterpreter {
             System.out.println("\n *** Execution Finished *** \n");
         } catch (Interpreter.InterpreterRuntimeException e) {
             System.err.println("Runtime Error: " + e.getMessage());
-            // Optionally, print the problematic line for context
+            // print the problematic line for context
             String[] lines = source.split("\n");
             if (e.getLineNumber() <= lines.length) {
                 System.err.println("Near: " + lines[e.getLineNumber() - 1]);

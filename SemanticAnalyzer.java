@@ -270,13 +270,11 @@ public class SemanticAnalyzer implements ASTVisitor<Void> {
 
     @Override
     public Void visit(FunctionNode node) {
-        // Function handling can be implemented as needed
         return null;
     }
 
     @Override
     public Void visit(FunctionCallNode node) {
-        // Function call handling can be implemented as needed
         return null;
     }
 
@@ -305,7 +303,6 @@ public class SemanticAnalyzer implements ASTVisitor<Void> {
             return true;
         }
 
-        // Add more type compatibility rules as needed
         return false;
     }
 

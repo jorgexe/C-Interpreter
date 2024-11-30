@@ -1,11 +1,17 @@
 public class VariableDeclarationNode extends ASTNode {
+    private String type;
     private String variableName;
     private ASTNode initializer;
 
-    public VariableDeclarationNode(int lineNumber, String variableName, ASTNode initializer) {
+    public VariableDeclarationNode(int lineNumber, String type, String variableName, ASTNode initializer) {
         super(lineNumber);
+        this.type = type;
         this.variableName = variableName;
         this.initializer = initializer;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public String getVariableName() {

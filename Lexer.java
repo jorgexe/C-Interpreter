@@ -149,7 +149,12 @@ public class Lexer {
             case '%': 
                 if (match('=')) return new Token(TokenType.MODULO_EQUAL, "%=", line);
                 return new Token(TokenType.MODULO, "%", line);
-            case '=': return new Token(match('=') ? TokenType.EQUAL : TokenType.ASSIGN, current == '=' ? "==" : "=", line);
+            case '=':
+                if (match('=')) {
+                    return new Token(TokenType.EQUAL, "==", line); // Equality operator
+                } else {
+                    return new Token(TokenType.ASSIGN, "=", line); // Assignment operator
+                }
             case '!': return new Token(match('=') ? TokenType.NOT_EQUAL : TokenType.NOT, current == '=' ? "!=" : "!", line);
             case '<': return new Token(match('=') ? TokenType.LESS_EQUAL : TokenType.LESS, current == '=' ? "<=" : "<", line);
             case '>': return new Token(match('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER, current == '=' ? ">=" : ">", line);

@@ -13,4 +13,6 @@ public interface ASTVisitor<T> {
     T visit(ReturnNode node);
     T visit(BlockNode node);
     T visit(VariableNode node);
+    T visit(UnaryOperationNode node);
+    T visit(LiteralNode node);
 }

@@ -15,12 +15,20 @@ public class Parser {
         while (!isAtEnd()) {
             statements.add(parseStatement());
         }
-        return new ProgramNode(peek().getLineNumber());
+        // Create ProgramNode with statements and line number
+        ProgramNode program = new ProgramNode(peek().getLineNumber());
+        // Add all statements to the program node
+        for (ASTNode statement : statements) {
+            program.addStatement(statement);
+        }
+        return program;
     }
 
     // Statement parsing methods
     private ASTNode parseStatement() {
-        if (match(TokenType.VAR)) return parseVariableDeclaration();
+        if (match(TokenType.INT, TokenType.FLOAT, TokenType.CHAR)) {
+            return parseVariableDeclaration();
+        }
         if (match(TokenType.IF)) return parseIfStatement();
         if (match(TokenType.WHILE)) return parseWhileStatement();
         if (match(TokenType.FOR)) return parseForStatement();
@@ -30,7 +38,6 @@ public class Parser {
         if (match(TokenType.LEFT_BRACE)) return parseBlock();
         if (match(TokenType.RETURN)) return parseReturnStatement();
         
-        // If not a special statement, must be an expression statement
         return parseExpressionStatement();
     }
 
@@ -41,15 +48,19 @@ public class Parser {
     }
     
     private VariableDeclarationNode parseVariableDeclaration() {
-        Token name = consume(TokenType.IDENTIFIER, "Expect variable name.");
-        ASTNode initializer = null;
+        Token typeToken = previous(); // Get the type token (INT, FLOAT, CHAR)
+        String type = typeToken.getValue();
         
+        Token nameToken = consume(TokenType.IDENTIFIER, "Expect variable name.");
+        String name = nameToken.getValue();
+        
+        ASTNode initializer = null;
         if (match(TokenType.ASSIGN)) {
             initializer = parseExpression();
         }
         
         consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.");
-        return new VariableDeclarationNode(name.getLineNumber(), name.getValue(), initializer);
+        return new VariableDeclarationNode(nameToken.getLineNumber(), type, name, initializer);
     }
 
     private IfNode parseIfStatement() {
@@ -261,22 +272,46 @@ public class Parser {
         return parsePrimary();
     }
 
-    private ASTNode parsePrimary() {
-        if (match(TokenType.FALSE)) return new LiteralNode(previous().getLineNumber(), false);
-        if (match(TokenType.TRUE)) return new LiteralNode(previous().getLineNumber(), true);
-        if (match(TokenType.NULL)) return new LiteralNode(previous().getLineNumber(), null);
-        if (match(TokenType.NUMBER, TokenType.STRING_LITERAL, TokenType.CHAR_LITERAL)) {
-            return new LiteralNode(previous().getLineNumber(), previous().getValue());
+    private ASTNode parsePrimary() throws ParserException {
+        if (match(TokenType.NUMBER)) {
+            Token numberToken = previous();
+            Object value;
+            String lexeme = numberToken.getValue();
+    
+            // Check if the number contains a decimal point to determine its type
+            if (lexeme.contains(".")) {
+                try {
+                    value = Double.parseDouble(lexeme);
+                } catch (NumberFormatException e) {
+                    throw new ParserException("Invalid float literal: " + lexeme, numberToken);
+                }
+            } else {
+                try {
+                    value = Integer.parseInt(lexeme);
+                } catch (NumberFormatException e) {
+                    throw new ParserException("Invalid integer literal: " + lexeme, numberToken);
+                }
+            }
+    
+            return new LiteralNode(numberToken.getLineNumber(), value);
         }
+    
+        if (match(TokenType.STRING_LITERAL)) {
+            Token stringToken = previous();
+            return new LiteralNode(stringToken.getLineNumber(), stringToken.getValue());
+        }
+    
         if (match(TokenType.IDENTIFIER)) {
-            return parseIdentifier();
+            Token identifierToken = previous();
+            return new VariableNode(identifierToken.getLineNumber(), identifierToken.getValue());
         }
+    
         if (match(TokenType.LEFT_PAREN)) {
             ASTNode expr = parseExpression();
             consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.");
             return expr;
         }
-
+    
         throw error(peek(), "Expect expression.");
     }
 
@@ -318,8 +353,22 @@ public class Parser {
         throw error(peek(), message);
     }
 
-    private ParseError error(Token token, String message) {
-        // Error handling
-        throw new ParseError(token, message);
+    private ParserException error(Token token, String message) {
+        return new ParserException(message, token);
+    }
+
+    private ASTNode parseIdentifier() {
+        Token name = previous();
+        if (match(TokenType.LEFT_PAREN)) {
+            List<ASTNode> arguments = new ArrayList<>();
+            if (!check(TokenType.RIGHT_PAREN)) {
+                do {
+                    arguments.add(parseExpression());
+                } while (match(TokenType.COMMA));
+            }
+            consume(TokenType.RIGHT_PAREN, "Expect ')' after arguments.");
+            return new FunctionCallNode(name.getLineNumber(), name.getValue(), arguments);
+        }
+        return new VariableNode(name.getLineNumber(), name.getValue());
     }
 }

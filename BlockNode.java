@@ -1,16 +1,11 @@
-import java.util.ArrayList;
 import java.util.List;
 
-public class ProgramNode extends ASTNode {
+public class BlockNode extends ASTNode {
     private List<ASTNode> statements;
 
-    public ProgramNode(int lineNumber) {
+    public BlockNode(int lineNumber, List<ASTNode> statements) {
         super(lineNumber);
-        this.statements = new ArrayList<>();
-    }
-
-    public void addStatement(ASTNode statement) {
-        statements.add(statement);
+        this.statements = statements;
     }
 
     public List<ASTNode> getStatements() {

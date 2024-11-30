@@ -17,6 +17,35 @@ public class Lexer {
         "input", TokenType.INPUT
     );
 
+    // Add to the keywords map
+    private final Map<String, TokenType> keywords = new HashMap<>() {{
+        put("int", TokenType.INT);
+        put("float", TokenType.FLOAT);
+        put("char", TokenType.CHAR);
+        put("if", TokenType.IF);
+        put("else", TokenType.ELSE);
+        put("while", TokenType.WHILE);
+        put("return", TokenType.RETURN);
+        put("print", TokenType.PRINT);
+        put("input", TokenType.INPUT);
+        put("var", TokenType.VAR);
+        put("fun", TokenType.FUN);
+        put("for", TokenType.FOR);
+        put("do", TokenType.DO);
+        put("switch", TokenType.SWITCH);
+        put("case", TokenType.CASE);
+        put("default", TokenType.DEFAULT);
+        put("break", TokenType.BREAK);
+        put("continue", TokenType.CONTINUE);
+        put("class", TokenType.CLASS);
+        put("new", TokenType.NEW);
+        put("this", TokenType.THIS);
+        put("super", TokenType.SUPER);
+        put("true", TokenType.TRUE);
+        put("false", TokenType.FALSE);
+        put("null", TokenType.NULL);
+    }};
+
     public Lexer(String source) {
         this.source = source;
         this.position = 0;
@@ -103,11 +132,23 @@ public class Lexer {
     private Token handleSymbol() {
         char current = advance();
         switch (current) {
-            case '+': return new Token(TokenType.PLUS, "+", line);
-            case '-': return new Token(TokenType.MINUS, "-", line);
-            case '*': return new Token(TokenType.MULTIPLY, "*", line);
-            case '/': return new Token(TokenType.DIVIDE, "/", line);
-            case '%': return new Token(TokenType.MODULO, "%", line);
+            case '+': 
+                if (match('+')) return new Token(TokenType.INCREMENT, "++", line);
+                if (match('=')) return new Token(TokenType.PLUS_EQUAL, "+=", line);
+                return new Token(TokenType.PLUS, "+", line);
+            case '-': 
+                if (match('-')) return new Token(TokenType.DECREMENT, "--", line);
+                if (match('=')) return new Token(TokenType.MINUS_EQUAL, "-=", line);
+                return new Token(TokenType.MINUS, "-", line);
+            case '*': 
+                if (match('=')) return new Token(TokenType.MULTIPLY_EQUAL, "*=", line);
+                return new Token(TokenType.MULTIPLY, "*", line);
+            case '/': 
+                if (match('=')) return new Token(TokenType.DIVIDE_EQUAL, "/=", line);
+                return new Token(TokenType.DIVIDE, "/", line);
+            case '%': 
+                if (match('=')) return new Token(TokenType.MODULO_EQUAL, "%=", line);
+                return new Token(TokenType.MODULO, "%", line);
             case '=': return new Token(match('=') ? TokenType.EQUAL : TokenType.ASSIGN, current == '=' ? "==" : "=", line);
             case '!': return new Token(match('=') ? TokenType.NOT_EQUAL : TokenType.NOT, current == '=' ? "!=" : "!", line);
             case '<': return new Token(match('=') ? TokenType.LESS_EQUAL : TokenType.LESS, current == '=' ? "<=" : "<", line);
@@ -120,6 +161,9 @@ public class Lexer {
             case ')': return new Token(TokenType.RIGHT_PAREN, ")", line);
             case '{': return new Token(TokenType.LEFT_BRACE, "{", line);
             case '}': return new Token(TokenType.RIGHT_BRACE, "}", line);
+            case '[': return new Token(TokenType.LEFT_BRACKET, "[", line);
+            case ']': return new Token(TokenType.RIGHT_BRACKET, "]", line);
+            case ':': return new Token(TokenType.COLON, ":", line);
             default:
                 throw new RuntimeException("Unexpected character '" + current + "' at line " + line);
         }
